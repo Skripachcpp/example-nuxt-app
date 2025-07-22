@@ -1,8 +1,7 @@
 import { defineComponent, ref } from "vue";
-import type { VNode } from "vue";
 import { Left, type LeftValue } from "~/components/left";
 import { Right, type RightValue } from "~/components/right";
-import styles from "./test.module.css";
+import styles from "./data-transfer.module.css";
 
 export type PageValue = LeftValue & RightValue;
 
