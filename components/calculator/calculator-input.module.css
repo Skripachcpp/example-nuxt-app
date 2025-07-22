@@ -1,0 +1,17 @@
+.calculatorInput {
+  padding: 8px 16px;
+  width: 100%;
+  min-height: 53px;
+  box-sizing: border-box;
+  background-color: grey;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.text {
+  font-size: 32px;
+  word-break: break-all;
+  text-align: right;
+}

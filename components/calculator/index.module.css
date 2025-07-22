@@ -1,0 +1,63 @@
+/* css grid тут бы лучше подошел но это реализация без него */
+
+.calculator {
+  background-color: orange;
+  width: 500px;
+  height: 550px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.topRow {
+  padding: 16px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 30px;
+}
+
+.topRowLeftButton {
+  margin-right: auto;
+}
+
+.leftRight {
+  display: flex;
+
+  height: 100%;
+}
+
+.left {
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #ffab0e;
+
+  width: 100%;
+  height: 100%;
+
+  box-sizing: border-box;
+}
+
+.leftRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leftBottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right {
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}

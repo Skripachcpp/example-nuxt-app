@@ -1,0 +1,11 @@
+.box {
+    background-color: rgb(243, 255, 165);
+    height: auto;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 80px 80px;
+    
+    }

@@ -1,0 +1,25 @@
+/* есть другие способы выровнить текст 
+по центру по вертикали но этот 
+гарантированно работает корректно 
+всегда и везде */
+
+.calculatorButton {
+  width: 60px;
+  height: 60px;
+  background-color: gold;
+  cursor: pointer;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+}
+
+.calculatorButton:hover {
+  background-color: yellow;
+}
+
+.text {
+  color: black;
+  font-size: 32px;
+}
+
