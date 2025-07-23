@@ -81,7 +81,7 @@ export const Calculator = defineComponent({
             break;
         }
 
-        currentOperator = it.operator
+        currentOperator = it.operator;
       });
 
       expressions.value = [{ number: sum }];

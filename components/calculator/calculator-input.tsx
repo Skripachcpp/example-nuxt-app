@@ -11,6 +11,6 @@ export const CalculatorInput = defineComponent({
       <div class={styles.calculatorInput}>
         <div class={styles.text}>{props.text}</div>
       </div>
-    )
+    );
   },
 });

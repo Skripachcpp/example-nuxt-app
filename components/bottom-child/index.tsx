@@ -18,5 +18,5 @@ export const BottomChild = defineComponent({
         <div style={{ backgroundColor: "#FF7F50" }}> {props.value?.bottomChildValue}</div>
       </div>
     );
-  }
+  },
 });
