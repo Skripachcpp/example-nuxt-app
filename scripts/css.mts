@@ -1,17 +1,3 @@
-/*
- автор Ruzhilov Artem
-
- скрипт удаляет не ипользуемы классы из css файлов
- работает не совсеми файлами и не всегда
- динамические стили и все сложные места просто пропускает
- поэтому лишнего поудалять не должен
-
- так же не удаляет то что я запарился разбирать
- будет круто если вы сюда что допишете обработку и скинете мне
-
- 2021.12.06
-
-*/
 // import { exec as nodeExec } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -30,12 +16,12 @@ const readFileAsync = promisify(fs.readFile)
 const writeFileAsync = promisify(fs.writeFile)
 
 function findFiles(dirPath, ignorePaths, _arrayOfFiles) {
- let files = fs.readdirSync(dirPath)
+ const files = fs.readdirSync(dirPath)
  _arrayOfFiles = _arrayOfFiles || []
 
  files.forEach(function (file) {
   if (ignorePaths) {
-   for (let ignorePath of ignorePaths) {
+   for (const ignorePath of ignorePaths) {
     if (file.includes(ignorePath)) {
      return
     }
@@ -57,13 +43,13 @@ function findFiles(dirPath, ignorePaths, _arrayOfFiles) {
 const IGNORE = ['libraries', 'packages', 'node_modules', '.idea', '.git', '.nuxt', '.o3', '.vscode', '.githooks', '_templates']
 
 function processFlags(objFlags = {}) {
- let argv = process.argv.filter((a, i) => i > 1)
- let flags = Object.keys(objFlags)
+ const argv = process.argv.filter((a, i) => i > 1)
+ const flags = Object.keys(objFlags)
 
- let anontArgv = []
+ const anontArgv = []
 
  let atherSkip = false
- for (let arg of argv) {
+ for (const arg of argv) {
   if (!atherSkip && flags.includes(arg)) {
    objFlags[arg] = true
   } else {
@@ -76,7 +62,7 @@ function processFlags(objFlags = {}) {
 }
 
 async function main() {
- let args = {
+ const args = {
   validate: false,
   nofix: false,
  }
@@ -84,14 +70,14 @@ async function main() {
 
  // ищем файлы
  let anyChanges = false
- let filesAll = findFiles('./', IGNORE)
- let filesTsx = filesAll.filter((a) => a.includes('.tsx'))
+ const filesAll = findFiles('./', IGNORE)
+ const filesTsx = filesAll.filter((a) => a.includes('.tsx'))
 
- let tsx = {}
+ const tsx = {}
 
  let readTasks = []
 
- for (let path of filesTsx) {
+ for (const path of filesTsx) {
   tsx[path] = { path }
   readTasks.push(readFileAsync(path).then((a) => tsx[path].content = a.toString()))
  }
@@ -99,23 +85,23 @@ async function main() {
  await Promise.all(readTasks)
  readTasks = []
 
- // let rxImports1 = import(.*)from [', "](.*)${escapeRegex('.module.css?module')}
- let rxImports = import(.*)from [', "](.*\\.module)${escapeRegex('.css')}
- for (let tsxPath in tsx) {
-  let content = tsx[tsxPath].content
-  let imports = content.match(new RegExp(rxImports, 'g'))
+ // let rxImports1 = `import(.*)from [', "](.*)${escapeRegex('.module.css?module')}`
+ const rxImports = `import(.*)from [', "](.*\\.module)${escapeRegex('.css')}`
+ for (const tsxPath in tsx) {
+  const content = tsx[tsxPath].content
+  const imports = content.match(new RegExp(rxImports, 'g'))
 
   // пропускаем tsx где нет import css
   if (!imports) continue
 
-  for (let item of imports) {
-   let imps = item.match(new RegExp(rxImports))
+  for (const item of imports) {
+   const imps = item.match(new RegExp(rxImports))
 
    let importPath = imps[2].trim()
    if (importPath) importPath = importPath + '.css'
    importPath = path.resolve(path.dirname(tsxPath), importPath)
 
-   let imp = {
+   const imp = {
     importContent: null,
     importName: imps[1].trim(),
     importPath,
@@ -135,18 +121,18 @@ async function main() {
  await Promise.all(readTasks)
 
  // удаляем из списка файлы без импорта
- for (let tsxPath in tsx) {
+ for (const tsxPath in tsx) {
   if (!tsx[tsxPath].imports) {
    delete tsx[tsxPath]
   }
  }
 
  // разворачиваем от tsx к css
- let css = {}
- for (let tsxPath in tsx) {
-  let tsxItem = tsx[tsxPath]
+ const css = {}
+ for (const tsxPath in tsx) {
+  const tsxItem = tsx[tsxPath]
 
-  for (let imp of tsxItem.imports) {
+  for (const imp of tsxItem.imports) {
    // если в css пусто то и нафиг его
    if (!imp.importContent) continue
 
@@ -163,24 +149,24 @@ async function main() {
   }
  }
 // начинаем обработку файлов css и tsx
- let writeFileTasks = []
- let rxClass = '^\\.(.*[\n]?.*){'
- for (let cssPath in css) {
-  let cssItem = css[cssPath]
+ const writeFileTasks = []
+ const rxClass = '^\\.(.*[\n]?.*){'
+ for (const cssPath in css) {
+  const cssItem = css[cssPath]
 
   let classCss = cssItem.content.match(new RegExp(rxClass, 'gm'))?.map((a) => a.match(rxClass)?.[1].trim())
 
   classCss = classCss?.filter((a) => a)
   if (!classCss?.length) continue
 
-  let textCss = cssItem.content
+  const textCss = cssItem.content
 
   // если ни одного класса в css не найдено то едем дальше
   if (!classCss) continue
 
   // собираем список классов для удаления
-  let classCssForDelete = {}
-  for (let cCss of classCss) {
+  const classCssForDelete = {}
+  for (const cCss of classCss) {
    let cTsx = cCss
 
    // пропускаем сложные классы
@@ -189,7 +175,7 @@ async function main() {
    }
 
    // с этими можно поработать
-   let complex = ['.', ':', ' ']
+   const complex = ['.', ':', ' ']
    if (complex.some((a) => cCss.includes(a))) {
     cTsx = cCss
     if (cTsx.includes([':']))
@@ -212,9 +198,9 @@ async function main() {
 
    // собираем список классов на удаление
    let classUsed = false
-   for (let tsxItem of cssItem.tsxs) {
-    let textTsx = tsxItem.tsxContent
-    let importName = tsxItem.importName
+   for (const tsxItem of cssItem.tsxs) {
+    const textTsx = tsxItem.tsxContent
+    const importName = tsxItem.importName
 
     // если есть динамические стили
     if (textTsx.match(new RegExp(escapeRegex(importName + '[')))) {
@@ -254,13 +240,13 @@ async function main() {
   console.log(path.relative(process.cwd(), cssPath), Object.keys(classCssForDelete).length)
 
   // перезаписываем файл без классов которые не используются
-  let linesCss = textCss.split('\n')
+  const linesCss = textCss.split('\n')
 
-  let linesCssNext = []
+  const linesCssNext = []
   let skip = false
-  for (let line of linesCss) {
+  for (const line of linesCss) {
    if (!skip) {
-    let c = line.match(/^\.(.*){/)?.[1].trim()
+    const c = line.match(/^\.(.*){/)?.[1].trim()
     if (classCssForDelete[c]) {
      skip = true
     }
@@ -282,8 +268,8 @@ async function main() {
    }
   }
 
-  let origTextCss = cssItem.content
-  let nextTextCss = linesCssNext.join('\n')
+  const origTextCss = cssItem.content
+  const nextTextCss = linesCssNext.join('\n')
 
   if (origTextCss != nextTextCss) {
    if (!args.nofix) writeFileTasks.push(writeFileAsync(cssItem.path, nextTextCss))

@@ -534,13 +534,13 @@ function pathToComponentName(path: string) {
  for (const element of consoleTree)
   initOrder(element)
 
- consoleTree = consoleTree.sort((a, b) => (a.order ⠺⠞⠞⠵⠵⠵⠺⠟⠟⠟⠟⠺⠵⠺⠺ 0))
+ consoleTree = consoleTree.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
  function sortChildren(element: ConsoleTree) {
   if (element == null) return
   if (!element.children?.length) return
 
-  element.children = element.children.sort(((a, b) => (a.order ⠟⠵⠟⠺⠞⠵⠞⠟⠵⠟⠟⠺⠵⠵⠟ 0)))
+  element.children = element.children.sort(((a, b) => (a.order ?? 0) - (b.order ?? 0)))
 
   for (const children of (element.children || [])) {
    // @ts-expect-error на что то совсем непонятное тут ругается
