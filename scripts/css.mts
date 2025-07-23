@@ -15,7 +15,7 @@ function escapeRegex(string) {
 const readFileAsync = promisify(fs.readFile)
 const writeFileAsync = promisify(fs.writeFile)
 
-function findFiles(dirPath, ignorePaths, _arrayOfFiles) {
+function findFiles(dirPath: string, ignorePaths: string[], _arrayOfFiles?: string[]) {
  const files = fs.readdirSync(dirPath)
  _arrayOfFiles = _arrayOfFiles || []
 
@@ -31,6 +31,7 @@ function findFiles(dirPath, ignorePaths, _arrayOfFiles) {
   if (fs.statSync(dirPath + '/' + file).isDirectory()) {
    _arrayOfFiles = findFiles(dirPath + '/' + file, ignorePaths, _arrayOfFiles)
   } else {
+		if (_arrayOfFiles == null) _arrayOfFiles = []
    _arrayOfFiles.push(path.resolve(dirPath, file))
   }
  })
@@ -43,10 +44,10 @@ function findFiles(dirPath, ignorePaths, _arrayOfFiles) {
 const IGNORE = ['libraries', 'packages', 'node_modules', '.idea', '.git', '.nuxt', '.o3', '.vscode', '.githooks', '_templates']
 
 function processFlags(objFlags = {}) {
- const argv = process.argv.filter((a, i) => i > 1)
+ const argv: string[] = process.argv.filter((a, i) => i > 1)
  const flags = Object.keys(objFlags)
 
- const anontArgv = []
+ const anontArgv: string[] = []
 
  let atherSkip = false
  for (const arg of argv) {
