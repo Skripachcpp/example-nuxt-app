@@ -234,31 +234,28 @@ async function initImports(cmpByPath: CmpByPath) {
       // css не интересует
       if (importPath.includes(".css")) continue
 
-      console.log("DEBUG importPath", importPath)
       const importPathArray = importPath?.split("/")
 
       if (importPath.includes("bottom-child"))
-        console.log("DEBUG !!!!", importPath)
+        if (importPathArray?.[0] == "~") {
+          // собираем импорты только компонентов
+          if (
+            importPathArray?.[1] != "components" &&
+            importPathArray?.[1] != "shared"
+          ) {
+            continue
+          }
 
-      if (importPathArray?.[0] == "~") {
-        // собираем импорты только компонентов
-        if (
-          importPathArray?.[1] != "components" &&
-          importPathArray?.[1] != "shared"
-        ) {
+          importPath = importPathArray?.slice(1).join("/")
+          importPath = path.resolve(__dirname, importPath)
+        } else if (importPath?.[0] == ".") {
+          // автоматом резолвит ./ ../ ../..
+          importPath = path.resolve(path.dirname(pathFull), importPath)
+        } else {
+          // импорт который начинается не с ~ и не с .
+          // это не похоже на импорт компонента
           continue
         }
-
-        importPath = importPathArray?.slice(1).join("/")
-        importPath = path.resolve(__dirname, ROOT_DIR, importPath)
-      } else if (importPath?.[0] == ".") {
-        // автоматом резолвит ./ ../ ../..
-        importPath = path.resolve(path.dirname(pathFull), importPath)
-      } else {
-        // импорт который начинается не с ~ и не с .
-        // это не похоже на импорт компонента
-        continue
-      }
 
       const imp: CmpImportInfo = {
         line: imps[0],
@@ -273,8 +270,13 @@ async function initImports(cmpByPath: CmpByPath) {
       }
 
       // если файл существует
-      if (imp.pathFull && fs.existsSync(imp.pathFull)) {
-        // возможно это папка
+      // TODO: тут посему то проскакивают папки
+      if (
+        imp.pathFull &&
+        fs.existsSync(imp.pathFull) &&
+        isFileSync(imp.pathFull)
+      ) {
+        // // возможно это папка
         // if (!isFileSync(imp.pathFull)) {
         //   const nextPath = imp.pathFull + "/index.tsx"
         //   if (isFileSync(nextPath)) {
@@ -282,20 +284,13 @@ async function initImports(cmpByPath: CmpByPath) {
         //   }
         // }
 
-        console.log("DEBUG 1???0.1", {
-          p: imp.pathFull,
-          ex: fs.existsSync(imp.pathFull),
+        // console.log("DEBUG 1???0.1", {
+        //   p: imp.pathFull,
+        //   ex: fs.existsSync(imp.pathFull),
+        // })
+        const task = readFileAsync(imp.pathFull).then((a) => {
+          imp.textOfImportedFile = a.toString()
         })
-        const task = readFileAsync(imp.pathFull)
-          .then((a) => {
-            console.log("DEBUG 1???0.1 next")
-            imp.textOfImportedFile = a.toString()
-          })
-          .catch((e) => {
-            console.log("DEBUG eeeee", { e, path: imp.pathFull })
-          })
-
-        await task // TODO: заглушка
 
         readTasks.push(task)
 
@@ -310,11 +305,7 @@ async function initImports(cmpByPath: CmpByPath) {
     }
   }
 
-  console.log("DEBUG 00000")
-
   await Promise.all(readTasks)
-
-  console.log("DEBUG 000001")
 
   // удаляем из списка файлы без импорта
   for (const pathFull in cmpByPath) {
@@ -329,8 +320,6 @@ function pathToRelativePath(path: string): string {
 }
 
 // !!--!!--!!--!!--!!--!!--!!
-
-const ROOT_DIR = "app"
 
 async function main() {
   const args = {
@@ -384,10 +373,8 @@ async function main() {
   // ищем файлы
   let anyChanges = false
 
-  const pagesCmpByPath = await readComponents("./" + ROOT_DIR + "/pages")
-  const componentsCmpByPath = await readComponents(
-    "./" + ROOT_DIR + "/components"
-  )
+  const pagesCmpByPath = await readComponents("./pages")
+  const componentsCmpByPath = await readComponents("./components")
 
   //  const layoutsCmpByPath = await readComponents('./layouts')
   //  const sharedCmpByPath = await readComponents('./shared')

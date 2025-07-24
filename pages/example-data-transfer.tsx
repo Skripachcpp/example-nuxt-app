@@ -1,9 +1,9 @@
-import { defineComponent, ref } from "vue";
-import { Left, type LeftValue } from "~/components/left";
-import { Right, type RightValue } from "~/components/right";
-import styles from "./example-data-transfer.module.css";
+import { defineComponent, ref } from "vue"
+import { Left, type LeftValue } from "~/components/left"
+import { Right, type RightValue } from "~/components/right"
+import styles from "./example-data-transfer.module.css"
 
-export type PageValue = LeftValue & RightValue;
+export type PageValue = LeftValue & RightValue
 
 export default defineComponent({
   setup() {
@@ -14,7 +14,7 @@ export default defineComponent({
       rightHeadValue: 3,
       rightBottomValue: 4,
       bottomChildValue: 5,
-    });
+    })
 
     return () => (
       <div class={styles.box}>
@@ -22,6 +22,6 @@ export default defineComponent({
         Test
         <Right value={value.value} />
       </div>
-    );
+    )
   },
-});
+})

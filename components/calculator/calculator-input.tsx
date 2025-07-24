@@ -1,6 +1,6 @@
-import { defineComponent } from "vue";
-import styles from "./calculator-input.module.css";
-import { prop } from "~/helpers/prop";
+import { defineComponent } from "vue"
+import styles from "./calculator-input.module.css"
+import { prop } from "~/helpers/prop"
 
 export const CalculatorInput = defineComponent({
   props: {
@@ -11,6 +11,6 @@ export const CalculatorInput = defineComponent({
       <div class={styles.calculatorInput}>
         <div class={styles.text}>{props.text}</div>
       </div>
-    );
+    )
   },
-});
+})

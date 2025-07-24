@@ -1,8 +1,8 @@
-import { defineComponent } from "vue";
-import { CalculatorInput } from "./calculator-input";
-import { CalculatorButton, CalculatorButtonGeneric } from "./calculator-button";
-import styles from "./index.module.css";
-import { prop } from "~/helpers/prop";
+import { defineComponent } from "vue"
+import { CalculatorInput } from "./calculator-input"
+import { CalculatorButton, CalculatorButtonGeneric } from "./calculator-button"
+import styles from "./index.module.css"
+import { prop } from "~/helpers/prop"
 
 // в калькуляторе не планируется полной реализации
 // нельзя ввести дробные чисела
@@ -11,8 +11,8 @@ import { prop } from "~/helpers/prop";
 // все операции выполняются последовательно
 // не забываем что это пример моего кода а не калькулятор
 
-const CalculatorButtonNumber = CalculatorButtonGeneric<number>();
-const CalculatorButtonOperator = CalculatorButtonGeneric<Operator>();
+const CalculatorButtonNumber = CalculatorButtonGeneric<number>()
+const CalculatorButtonOperator = CalculatorButtonGeneric<Operator>()
 
 enum Operator {
   Plus = "+",
@@ -22,14 +22,11 @@ enum Operator {
 }
 
 type Expression = {
-  number: number;
-  operator?: Operator;
-};
+  number: number
+  operator?: Operator
+}
 
 export const Calculator = defineComponent({
-  props: {
-    whenButtonClick: prop<() => void>().optional(),
-  },
   setup() {
     const expressions = ref<Expression[]>([
       // { number: 2, operator: Operator.Plus },
@@ -39,69 +36,74 @@ export const Calculator = defineComponent({
       // { number: 3, operator: Operator.Plus },
       // { number: 2, operator: Operator.Minus },
       // { number: 3 },
-    ]);
+    ])
 
     const expressionsText = computed<string>(() => {
-      return expressions.value.map((it) => it.number.toString() + (it.operator?.toString() ?? "")).join("");
-    });
+      return expressions.value
+        .map((it) => it.number.toString() + (it.operator?.toString() ?? ""))
+        .join("")
+    })
 
     const clickToNumber = (value: number) => {
-      const expressionLast = expressions.value.at(-1);
+      const expressionLast = expressions.value.at(-1)
 
       if (expressionLast == null || expressionLast.operator != null) {
-        expressions.value.push({ number: value });
+        expressions.value.push({ number: value })
       } else {
         // TODO: нет реализации для дробных чисел
-        expressionLast.number = parseInt(expressionLast.number.toString() + value.toString());
+        expressionLast.number = parseInt(
+          expressionLast.number.toString() + value.toString()
+        )
       }
-    };
+    }
 
     const clickToCalc = () => {
       // можно было использовать reduce но с ним тут не удобно
       // вариант с forEach получился более очевидный и читаемый
+      if (expressions.value[0] == null) return
 
-      let sum = expressions.value[0].number;
-      let currentOperator = expressions.value[0].operator;
+      let sum = expressions.value[0].number
+      let currentOperator = expressions.value[0]?.operator
 
       expressions.value.forEach((it, index) => {
-        if (index == 0) return;
+        if (index == 0) return
 
         switch (currentOperator) {
           case Operator.Plus:
-            sum = sum + it.number;
-            break;
+            sum = sum + it.number
+            break
           case Operator.Minus:
-            sum = sum - it.number;
-            break;
+            sum = sum - it.number
+            break
           case Operator.Multiply:
-            sum = sum * it.number;
-            break;
+            sum = sum * it.number
+            break
           case Operator.Divide:
-            sum = sum / it.number;
-            break;
+            sum = sum / it.number
+            break
         }
 
-        currentOperator = it.operator;
-      });
+        currentOperator = it.operator
+      })
 
-      expressions.value = [{ number: sum }];
-    };
+      expressions.value = [{ number: sum }]
+    }
 
     const clickToOperator = (operator: Operator) => {
       // из за 2+2*2 приходится считать сразу
-      if (expressions.value.length >= 2) clickToCalc();
+      if (expressions.value.length >= 2) clickToCalc()
 
-      const expressionLast = expressions.value.at(-1);
+      const expressionLast = expressions.value.at(-1)
 
       // TODO: нет реализации для отрицательных чисел
       if (expressionLast != null) {
-        expressionLast.operator = operator;
+        expressionLast.operator = operator
       }
-    };
+    }
 
     const clickToClear = () => {
-      expressions.value = [];
-    };
+      expressions.value = []
+    }
 
     return () => (
       <div class={styles.calculator}>
@@ -110,11 +112,27 @@ export const Calculator = defineComponent({
         </div>
 
         <div class={styles.topRow}>
-          <CalculatorButton class={styles.topRowLeftButton} value={"C"} whenClick={() => clickToClear()} />
-          <CalculatorButtonOperator value={Operator.Plus} whenClick={clickToOperator} />
-          <CalculatorButtonOperator value={Operator.Minus} whenClick={clickToOperator} />
-          <CalculatorButtonOperator value={Operator.Multiply} whenClick={clickToOperator} />
-          <CalculatorButtonOperator value={Operator.Divide} whenClick={clickToOperator} />
+          <CalculatorButton
+            class={styles.topRowLeftButton}
+            value={"C"}
+            whenClick={() => clickToClear()}
+          />
+          <CalculatorButtonOperator
+            value={Operator.Plus}
+            whenClick={clickToOperator}
+          />
+          <CalculatorButtonOperator
+            value={Operator.Minus}
+            whenClick={clickToOperator}
+          />
+          <CalculatorButtonOperator
+            value={Operator.Multiply}
+            whenClick={clickToOperator}
+          />
+          <CalculatorButtonOperator
+            value={Operator.Divide}
+            whenClick={clickToOperator}
+          />
         </div>
 
         <div class={styles.leftRight}>
@@ -148,6 +166,6 @@ export const Calculator = defineComponent({
           </div>
         </div>
       </div>
-    );
+    )
   },
-});
+})
